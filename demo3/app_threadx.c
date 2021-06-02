@@ -132,7 +132,7 @@ void MainThread_Entry(ULONG thread_input)
   uint8_t count = 0; 
   (void) thread_input;
   
-  while (count < 3)
+  while (count < 5)
   {
     count++;
     if (tx_event_flags_get(&EventFlag, THREAD_ONE_EVT, TX_OR_CLEAR, 
