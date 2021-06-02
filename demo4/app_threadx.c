@@ -184,6 +184,15 @@ void MainThread_Entry(ULONG thread_input)
         /* Reset the priority and preemption threshold of ThreadTwo */ 
         tx_thread_priority_change(&ThreadTwo, THREAD_TWO_PRIO, &old_prio);
         tx_thread_preemption_change(&ThreadTwo, THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+        
+        if (tx_event_flags_get(&EventFlag, THREAD_THREE_EVT, TX_OR_CLEAR,
+    	  	&actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
+       {
+      Error_Handler();
+       }else{
+           tx_thread_priority_change(&ThreadThree, 7, &old_prio);
+           tx_thread_preemption_change(&ThreadThree, 7, &old_pre_threshold);
+        }
       }
     }
 
@@ -193,16 +202,6 @@ void MainThread_Entry(ULONG thread_input)
   tx_thread_terminate(&ThreadOne);
   tx_thread_terminate(&ThreadTwo);
  
- while (count < 4)
-  {
-    count++;
- if (tx_event_flags_get(&EventFlag, THREAD_THREE_EVT, TX_OR_CLEAR,
-    		&actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
-    {
-      Error_Handler();
-    }
-
-    }
  
   
 
