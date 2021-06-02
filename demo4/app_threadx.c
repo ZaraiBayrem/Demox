@@ -189,7 +189,10 @@ void MainThread_Entry(ULONG thread_input)
 
  
   }
-  
+    /* Destroy ThreadOne and ThreadTwo */
+  tx_thread_terminate(&ThreadOne);
+  tx_thread_terminate(&ThreadTwo);
+ 
  while (count < 4)
   {
     count++;
@@ -202,9 +205,7 @@ void MainThread_Entry(ULONG thread_input)
     }
  
   
-  /* Destroy ThreadOne and ThreadTwo */
-  tx_thread_terminate(&ThreadOne);
-  tx_thread_terminate(&ThreadTwo);
+
   tx_thread_terminate(&ThreadThree);
   
   /* Infinite loop */
