@@ -196,7 +196,7 @@ void ThreadOne_Entry(ULONG thread_input)
   /* Infinite loop */
   while(1)
   {
-    BSP_LED_Toggle(LED_GREEN);
+    BSP_LED_Toggle(LED_RED);
     /* Delay for 500ms (App_Delay is used to avoid context change). */
     App_Delay(50);
     count ++;
@@ -223,7 +223,7 @@ void ThreadTwo_Entry(ULONG thread_input)
   /* Infinite loop */
   while (1)
   {
-    BSP_LED_Toggle(LED_GREEN);
+    BSP_LED_Toggle(LED_YELLOW);
     /* Delay for 200ms (App_Delay is used to avoid context change). */
     App_Delay(20);
     count ++;
