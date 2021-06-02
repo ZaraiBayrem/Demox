@@ -187,12 +187,20 @@ void MainThread_Entry(ULONG thread_input)
       }
     }
 
-    if (tx_event_flags_get(&EventFlag, THREAD_THREE_EVT, TX_OR_CLEAR,
+ 
+  }
+  
+ while (count < 4)
+  {
+    count++;
+ if (tx_event_flags_get(&EventFlag, THREAD_THREE_EVT, TX_OR_CLEAR,
     		&actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
     {
-    	Error_Handler();
+      Error_Handler();
     }
-  }
+
+    }
+ 
   
   /* Destroy ThreadOne and ThreadTwo */
   tx_thread_terminate(&ThreadOne);
