@@ -281,7 +281,7 @@ void ThreadThree_Entry(ULONG thread_input)
   /* Infinite loop */
   while (1)
   {
-    BSP_LED_Toggle(LED_GREEN);
+    BSP_LED_Toggle(LED_YELLOW);
     /* Delay for 100ms (App_Delay is used to avoid context change). */
     App_Delay(10);
     count ++;
