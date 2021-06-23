@@ -213,15 +213,28 @@ void MainThread_Entry(ULONG thread_input)
   tx_thread_terminate(&ThreadOne);
   tx_thread_terminate(&ThreadTwo);
 
-  /* Destroy ContainerOne */
+   /* Destroy ContainerOne */
   if( tx_container_terminate(&ContainerOne)!=TX_SUCCESS)
   {
-    TX_TERMINATE_ERROR;
+    TX_ERROR;
   }
   else
   {
-    /* when container one is terminated then toggle yellow led for 10s.  */
+    /* when container one is terminated then toggle yellow led for 5s.  */
     BSP_LED_Toggle(LED_YELLOW);
+    /* Thread sleep for 1s */
+    tx_thread_sleep(500);
+  }
+   
+  /* Delete container one and all its contents.  */
+   if( tx_container_delete(&ContainerOne)!=TX_SUCCESS)
+  {
+    TX_ERROR;
+  }
+   else
+  {
+    /* when container one is terminated then toggle GREEN led for 10s.  */
+    BSP_LED_Toggle(LED_GREEN);
     /* Thread sleep for 1s */
     tx_thread_sleep(1000);
   }
