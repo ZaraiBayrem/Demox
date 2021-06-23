@@ -54,7 +54,7 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define APP_STACK_SIZE                           512
-#define CONTAINER_STACK_SIZE                     2048 
+#define CONTAINER_STACK_SIZE                     512 
 #define APP_BYTE_POOL_SIZE                       (12 * 1024)
 
 
