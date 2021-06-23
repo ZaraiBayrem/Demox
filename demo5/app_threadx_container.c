@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    app_threadx.c
+  * @file    app_threadx_container.c
   * @author  ST Team
   * @brief   ThreadX applicative with container file
   ******************************************************************************
