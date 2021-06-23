@@ -1,8 +1,8 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    app_threadx_container.c
-  * @author  Bayrem ZARAI
+  * @file    app_threadx.c
+  * @author  ST Team
   * @brief   ThreadX applicative with container file
   ******************************************************************************
   * @attention
@@ -15,7 +15,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "app_threadx_container.h"
+#include "app_threadx.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -76,7 +76,7 @@ UINT App_ThreadX_Container_Init(VOID *memory_ptr)
     ret = TX_POOL_ERROR;
   }
   
-  /* Create container.  */
+  /* Create first container.  */
   if (tx_container_create(&ContainerOne, Container One, 0,  CONTAINER_STACK_SIZE, 
                          &GroupOne, TX_AUTO_START) != TX_SUCCESS)                 
   {
@@ -99,23 +99,6 @@ UINT App_ThreadX_Container_Init(VOID *memory_ptr)
     ret = TX_THREAD_ERROR;
   }
 
-  /* Allocate the stack for MainThread.  */
-  if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
-                       APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
-  {
-    ret = TX_POOL_ERROR;
-  }
-  
-  /* Create MainThread.  */
-  if (tx_thread_create(&ThreeThread, "Three Thread", ThreeThread_Entry, 0,  
-                       pointer, APP_STACK_SIZE, 
-                       THREE_THREAD_PRIO, THREE_THREAD_PREEMPTION_THRESHOLD,
-                       TX_NO_TIME_SLICE, TX_AUTO_START) != TX_SUCCESS)
-  {
-    ret = TX_THREAD_ERROR;
-  }
-
-  
   /* Allocate the stack for ThreadOne.  */
   if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
                        APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
@@ -153,7 +136,7 @@ UINT App_ThreadX_Container_Init(VOID *memory_ptr)
   {
     ret = TX_GROUP_ERROR;
   }
-  /* USER CODE END App_ThreadX_Init */
+  /* USER CODE END App_ThreadX_Container_Init */
 
   return ret;
 }
@@ -167,12 +150,12 @@ UINT App_ThreadX_Container_Init(VOID *memory_ptr)
   */
 void MainThread_Entry(ULONG thread_input)
 {
-  UINT old_prio = 0;
-  UINT old_pre_threshold = 0;
-  UINT status;
-  ULONG   actual_flags = 0;
-  uint8_t count = 0; 
-  (void) thread_input;
+  UINT                    old_prio = 0;
+  UINT           old_pre_threshold = 0;
+  UINT                          status;
+  ULONG               actual_flags = 0;
+  uint8_t                    count = 0; 
+  (void)                  thread_input;
 
   /* Add thread one to the Container one.   */
   if (tx_container_addthread(&ContainerOne,&ThreadOne)!=TX_SUCCESS)
@@ -193,38 +176,38 @@ void MainThread_Entry(ULONG thread_input)
   }
   
   /* Get the status after resuming thread one and thread two.   */ 
-  status = tx_thread_resume(&fx_thread_one) & tx_thread_resume(&fx_thread_two);
+  status = tx_thread_resume(&ThreadOne) & tx_thread_resume(&ThreadTwo);
 
   if (status == TX_SUCCESS)
   {
     while (count < 3)
-  {
-    count++;
-    if (tx_event_flags_get(&EventFlag, THREAD_ONE_EVT, TX_OR_CLEAR, 
-                           &actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
     {
-      Error_Handler();
-    }
-    else
-    {
-      /* Update the priority and preemption threshold of ThreadTwo 
-      to allow the preemption of ThreadOne */
-      tx_thread_priority_change(&ThreadTwo, NEW_THREAD_TWO_PRIO, &old_prio);
-      tx_thread_preemption_change(&ThreadTwo, NEW_THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
-      
-      if (tx_event_flags_get(&EventFlag, THREAD_TWO_EVT, TX_OR_CLEAR, 
-                             &actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
+      count++;
+      if (tx_event_flags_get(&EventFlag, THREAD_ONE_EVT, TX_OR_CLEAR, 
+                            &actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
       {
         Error_Handler();
       }
       else
       {
-        /* Reset the priority and preemption threshold of ThreadTwo */ 
-        tx_thread_priority_change(&ThreadTwo, THREAD_TWO_PRIO, &old_prio);
-        tx_thread_preemption_change(&ThreadTwo, THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+        /* Update the priority and preemption threshold of ThreadTwo 
+        to allow the preemption of ThreadOne */
+        tx_thread_priority_change(&ThreadTwo, NEW_THREAD_TWO_PRIO, &old_prio);
+        tx_thread_preemption_change(&ThreadTwo, NEW_THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+      
+        if (tx_event_flags_get(&EventFlag, THREAD_TWO_EVT, TX_OR_CLEAR, 
+                             &actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
+        {
+          Error_Handler();
+        }
+        else
+        {
+          /* Reset the priority and preemption threshold of ThreadTwo */ 
+          tx_thread_priority_change(&ThreadTwo, THREAD_TWO_PRIO, &old_prio);
+          tx_thread_preemption_change(&ThreadTwo, THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+        }
       }
     }
-  }
   }
   /* Destroy ThreadOne and ThreadTwo */
   tx_thread_terminate(&ThreadOne);
@@ -281,6 +264,7 @@ void ThreadOne_Entry(ULONG thread_input)
     }
   }
 }
+
 
 /**
   * @brief  Function implementing the ThreadTwo thread.
