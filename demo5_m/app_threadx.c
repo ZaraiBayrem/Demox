@@ -2,7 +2,7 @@
 /**
   ******************************************************************************
   * @file    app_threadx.c
-  * @author  ST Team
+  * @author  Bayrem ZARAI
   * @brief   ThreadX applicative with container file
   ******************************************************************************
   * @attention
