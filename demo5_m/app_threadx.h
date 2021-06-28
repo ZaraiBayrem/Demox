@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    app_threadx_container.h
+  * @file    app_threadx.h
   * @author  Bayrem ZARAI
   * @brief   ThreadX applicative with container file
   ******************************************************************************
