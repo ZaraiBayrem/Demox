@@ -1,19 +1,14 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    app_threadx.h
-  * @author  MCD Application Team
-  * @brief   ThreadX applicative header file
+  * @file    app_threadx_container.h
+  * @author  Bayrem ZARAI
+  * @brief   ThreadX applicative with container file
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 Actia Engineering Services. 
   * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
@@ -59,16 +54,21 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define APP_STACK_SIZE                           512
+#define CONTAINER_STACK_SIZE                     512 
 #define APP_BYTE_POOL_SIZE                       (12 * 1024)
 
 #define THREAD_ONE_PRIO                          10
 #define THREAD_ONE_PREEMPTION_THRESHOLD          THREAD_ONE_PRIO
+#define THREAD_TWO_PRIO                          10
+#define THREAD_TWO_PREEMPTION_THRESHOLD          9
 #define MAIN_THREAD_PRIO                         5
-
 #define MAIN_THREAD_PREEMPTION_THRESHOLD         MAIN_THREAD_PRIO
 
+#define NEW_THREAD_TWO_PRIO                      8
+#define NEW_THREAD_TWO_PREEMPTION_THRESHOLD      8
 
 #define THREAD_ONE_EVT                           0x01
+#define THREAD_TWO_EVT                           0x02
 
 
 
