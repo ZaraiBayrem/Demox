@@ -18,7 +18,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "app_threadx.h"
 
@@ -47,7 +46,8 @@
 TX_THREAD MainThread;
 TX_THREAD ThreadOne;
 TX_THREAD ThreadTwo;
-TX_THREAD th3;
+TX_CONTAINER ContainerOne;
+/** TX_GROUP GroupOne; **/
 TX_EVENT_FLAGS_GROUP EventFlag;
 /* USER CODE END PV */
 
@@ -56,12 +56,12 @@ TX_EVENT_FLAGS_GROUP EventFlag;
 void ThreadOne_Entry(ULONG thread_input);
 void ThreadTwo_Entry(ULONG thread_input);
 void MainThread_Entry(ULONG thread_input);
-void th3_Entry(ULONG thread_input);
 void App_Delay(uint32_t Delay);
+
 /* USER CODE END PFP */
 /**
-  * @brief  Application ThreadX Initialization.
-  * @param memo    ry_ptr: memory pointer
+  * @brief  Application ThreadX with Container Initialization.
+  * @param  memory_ptr: memory pointer
   * @retval int
   */
 UINT App_ThreadX_Init(VOID *memory_ptr)
@@ -72,6 +72,19 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
   /* USER CODE BEGIN App_ThreadX_Init */
   CHAR *pointer;
 
+  /* Allocate the stack for first container.  */
+  if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
+                       APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
+  {
+    ret = TX_POOL_ERROR;
+  }
+  
+  /* Create first container.  */
+  if (tx_container_create(&ContainerOne, Container One, 0,  CONTAINER_STACK_SIZE, 
+                         NULL, TX_AUTO_START) != TX_SUCCESS)                 
+  {
+    ret = TX_THREAD_ERROR;
+  }
   /* Allocate the stack for MainThread.  */
   if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
                        APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
@@ -87,9 +100,7 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
   {
     ret = TX_THREAD_ERROR;
   }
-
-
-
+  
   /* Allocate the stack for ThreadOne.  */
   if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
                        APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
@@ -101,12 +112,26 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
   if (tx_thread_create(&ThreadOne, "Thread One", ThreadOne_Entry, 0,  
                        pointer, APP_STACK_SIZE, 
                        THREAD_ONE_PRIO, THREAD_ONE_PREEMPTION_THRESHOLD,
-                       TX_NO_TIME_SLICE, TX_AUTO_START) != TX_SUCCESS)
+                       TX_NO_TIME_SLICE, TX_DONT_START) != TX_SUCCESS)
   {
     ret = TX_THREAD_ERROR;
   }
 
-
+  /* Allocate the stack for ThreadTwo.  */
+  if (tx_byte_allocate(byte_pool, (VOID **) &pointer,
+                       APP_STACK_SIZE, TX_NO_WAIT) != TX_SUCCESS)
+  {
+    ret = TX_POOL_ERROR;
+  }
+  
+  /* Create ThreadTwo.  */
+  if (tx_thread_create(&ThreadTwo, "Thread Two", ThreadTwo_Entry, 0,  
+                       pointer, APP_STACK_SIZE, 
+                       THREAD_TWO_PRIO, THREAD_TWO_PREEMPTION_THRESHOLD,
+                       TX_NO_TIME_SLICE, TX_DONT_START) != TX_SUCCESS)
+  {
+    ret = TX_THREAD_ERROR;
+  }
   
   /* Create the event flags group.  */
   if (tx_event_flags_create(&EventFlag, "Event Flag") != TX_SUCCESS)
@@ -117,7 +142,6 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
 
   return ret;
 }
-
 /* USER CODE BEGIN 1 */
 /**
   * @brief  Function implementing the MainThread thread.
@@ -128,11 +152,37 @@ void MainThread_Entry(ULONG thread_input)
 {
   UINT old_prio = 0;
   UINT old_pre_threshold = 0;
+  UINT status;
   ULONG   actual_flags = 0;
   uint8_t count = 0; 
   (void) thread_input;
   
-  while (count < 5)
+
+
+  /* Add thread one to the Container one.   */
+  if (tx_container_addthread(&ContainerOne,&ThreadOne)!=TX_SUCCESS)
+  {
+    Error_Handler();
+  }
+
+  /* Add thread two to the Container one.   */
+  if (tx_container_addthread(&ContainerOne,&ThreadTwo)!=TX_SUCCESS)
+  {
+    Error_Handler();
+  }
+  
+  /* Resume container one because it was in the suspended state.   */
+  if (tx_container_resume(&ContainerOne)!=TX_SUCCESS)
+  {
+    Error_Handler();
+  }
+   /* Get the status after resuming thread one and thread two.   */ 
+  status = tx_thread_resume(&ThreadOne) & tx_thread_resume(&ThreadTwo);
+
+  if (status == TX_SUCCESS)
+  {
+
+    while (count < 3)
   {
     count++;
     if (tx_event_flags_get(&EventFlag, THREAD_ONE_EVT, TX_OR_CLEAR, 
@@ -140,22 +190,64 @@ void MainThread_Entry(ULONG thread_input)
     {
       Error_Handler();
     }
-
+    else
+    {
+      /* Update the priority and preemption threshold of ThreadTwo 
+      to allow the preemption of ThreadOne */
+      tx_thread_priority_change(&ThreadTwo, NEW_THREAD_TWO_PRIO, &old_prio);
+      tx_thread_preemption_change(&ThreadTwo, NEW_THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+      
+      if (tx_event_flags_get(&EventFlag, THREAD_TWO_EVT, TX_OR_CLEAR, 
+                             &actual_flags, TX_WAIT_FOREVER) != TX_SUCCESS)
+      {
+        Error_Handler();
+      }
+      else
+      {
+        /* Reset the priority and preemption threshold of ThreadTwo */ 
+        tx_thread_priority_change(&ThreadTwo, THREAD_TWO_PRIO, &old_prio);
+        tx_thread_preemption_change(&ThreadTwo, THREAD_TWO_PREEMPTION_THRESHOLD, &old_pre_threshold);
+      }
     }
+  }
   
-
   /* Destroy ThreadOne and ThreadTwo */
   tx_thread_terminate(&ThreadOne);
+  tx_thread_terminate(&ThreadTwo);
+
+   /* Destroy ContainerOne */
+  if( tx_container_terminate(&ContainerOne)!=TX_SUCCESS)
+  {
+    TX_ERROR;
+  }
+  else
+  {
+    /* when container one is terminated then toggle yellow led for 5s.  */
+    BSP_LED_Toggle(LED_YELLOW);
+    /* Thread sleep for 1s */
+    tx_thread_sleep(500);
+  }
+  /* Delete container one and all its contents.  */
+   if( tx_container_delete(&ContainerOne)!=TX_SUCCESS)
+  {
+    TX_ERROR;
+  }
+   else
+  {
+    /* when container one is terminated then toggle GREEN led for 10s.  */
+    BSP_LED_Toggle(LED_RED);
+    /* Thread sleep for 7s */
+    tx_thread_sleep(700);
+  }
+   
 
   /* Infinite loop */
   while(1)
   {
-    BSP_LED_Toggle(LED_RED);
+    BSP_LED_Toggle(LED_GREEN);
     /* Thread sleep for 1s */
     tx_thread_sleep(100);
-    BSP_LED_Toggle(LED_YELLOW);
-        /* Thread sleep for 1s */
-    tx_thread_sleep(100);
+  }
   }
 }
 
