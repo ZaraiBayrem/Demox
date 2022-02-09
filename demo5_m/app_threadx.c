@@ -5,12 +5,6 @@
   * @author  Bayrem ZARAI
   * @brief   ThreadX applicative with container file
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 Actia Engineering Services. 
-  * All rights reserved.</center></h2>
-  *
-  ******************************************************************************
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
