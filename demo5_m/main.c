@@ -5,12 +5,6 @@
   * @author  Bayrem ZARAI
   * @brief   main file
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 Actia Engineering Services. 
-  * All rights reserved.</center></h2>
-  *
-  ******************************************************************************
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -239,5 +233,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT Actia Engineering Services. *****END OF FILE****/
