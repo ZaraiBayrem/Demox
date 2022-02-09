@@ -73,4 +73,3 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 #endif
 #endif /* __APP_THREADX_H__ */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
