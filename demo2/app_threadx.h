@@ -5,17 +5,6 @@
   * @author  MCD Application Team
   * @brief   ThreadX applicative header file
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -59,7 +48,7 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define APP_STACK_SIZE                           512
-#define APP_BYTE_POOL_SIZE                       (12 * 1024)
+#define APP_BYTE_POOL_SIZE                       12 * 1024
 
 #define THREAD_ONE_PRIO                          10
 #define THREAD_ONE_PREEMPTION_THRESHOLD          THREAD_ONE_PRIO
