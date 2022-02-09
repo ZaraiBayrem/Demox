@@ -2,7 +2,7 @@
 /**
   ******************************************************************************
   * @file    app_threadx.h
-  * @author  MCD Application Team
+  * @author  Bayrem ZARAI
   * @brief   ThreadX applicative header file
   ******************************************************************************
   */
