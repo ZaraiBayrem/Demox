@@ -5,12 +5,6 @@
   * @author  Bayrem ZARAI
   * @brief   ThreadX applicative with container file
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 Actia Engineering Services. 
-  * All rights reserved.</center></h2>
-  *
-  ******************************************************************************
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -80,5 +74,3 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 }
 #endif
 #endif /* __APP_THREADX_H__ */
-
-/************************ (C) COPYRIGHT Actia Engineering Services. *****END OF FILE****/
