@@ -1,2 +1,2 @@
 # Demox
-This repository present Different Demo on STM32 after extention of azure rtos to support sevrel APIs like Containers and Supervisor Task.
+This repository contains the most needed .c and .h files for different demos on STM32 after the extension of AZURE RTOS to support several APIs like containers and Supervisor tasks.
